@@ -28,33 +28,64 @@ lu jual gwe beli
     cp .env.example .env
     ```
 
-4. **Generate application key**
+4. **Setup database**
+
+    - Buat database baru (misal: `tubes_ppl`)
+    - Edit file `.env` dan sesuaikan konfigurasi database:
+
+    ```env
+    DB_CONNECTION=mysql
+    DB_HOST=127.0.0.1
+    DB_PORT=3306
+    DB_DATABASE=tubes_ppl
+    DB_USERNAME=akar
+    DB_PASSWORD=rajangoding
+    ```
+
+5. **Generate application key**
 
     ```bash
     php artisan key:generate
     ```
 
-5. **Install NPM dependencies**
+6. **Run migrations**
+
+    ```bash
+    php artisan migrate
+    ```
+
+7. **Seed database (optional)**
+
+    ```bash
+    php artisan db:seed
+    ```
+
+8. **Install NPM dependencies**
 
     ```bash
     npm install
     ```
 
-6. **Build assets**
+9. **Build assets**
 
     ```bash
     npm run build
     ```
 
-7. **Run development server**
+10. **Create storage link (jika ada upload file)**
+
+    ```bash
+    php artisan storage:link
+    ```
+
+11. **Run development server**
 
     ```bash
     php artisan serve
     ```
 
-8. **Access application**
+12. **Access application**
     - Open browser: http://127.0.0.1:8000
-
 
 Jika ingin menggunakan hot reload untuk CSS/JS:
 
