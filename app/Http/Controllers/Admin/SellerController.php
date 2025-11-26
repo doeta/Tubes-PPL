@@ -5,6 +5,8 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use App\Models\User;
 use App\Models\Seller;
+use App\Notifications\SellerApproved;
+use App\Notifications\SellerRejected;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 
@@ -37,7 +39,10 @@ class SellerController extends Controller
             'verified_by' => Auth::id(),
         ]);
 
-        return redirect()->back()->with('success', 'Penjual berhasil disetujui!');
+        // Send approval email notification
+        $seller->notify(new SellerApproved($seller->seller));
+
+        return redirect()->back()->with('success', 'Penjual berhasil disetujui dan email notifikasi telah dikirim!');
     }
 
     public function reject(Request $request, User $seller)
@@ -54,7 +59,10 @@ class SellerController extends Controller
             'verified_by' => Auth::id(),
         ]);
 
-        return redirect()->back()->with('success', 'Penjual ditolak!');
+        // Send rejection email notification
+        $seller->notify(new SellerRejected($seller->seller, $request->rejection_reason));
+
+        return redirect()->back()->with('success', 'Penjual ditolak dan email notifikasi telah dikirim!');
     }
 
     public function suspend(User $seller)
