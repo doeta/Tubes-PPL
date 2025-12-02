@@ -19,6 +19,25 @@ Route::get('/products', [CatalogController::class, 'index'])->name('catalog.inde
 Route::get('/p/{category:slug}', [CatalogController::class, 'indexByCategory'])->name('catalog.category');
 Route::get('/products/{product:slug}', [CatalogController::class, 'show'])->name('catalog.show');
 
+// Public Cart Routes (for guest users)
+Route::prefix('cart')->name('cart.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\CartController::class, 'index'])->name('index');
+    Route::post('/add/{product:slug}', [\App\Http\Controllers\CartController::class, 'add'])->name('add');
+    Route::patch('/{cart}', [\App\Http\Controllers\CartController::class, 'update'])->name('update');
+    Route::delete('/{cart}', [\App\Http\Controllers\CartController::class, 'destroy'])->name('destroy');
+    Route::post('/clear', [\App\Http\Controllers\CartController::class, 'clear'])->name('clear');
+});
+
+// Public Review Routes (for guest users)
+Route::post('/products/{product:slug}/reviews', [\App\Http\Controllers\ReviewController::class, 'store'])->name('reviews.store');
+
+// Public Checkout Routes
+Route::prefix('checkout')->name('checkout.')->group(function () {
+    Route::get('/', [\App\Http\Controllers\CheckoutController::class, 'index'])->name('index');
+    Route::post('/process', [\App\Http\Controllers\CheckoutController::class, 'process'])->name('process');
+    Route::get('/success/{order}', [\App\Http\Controllers\CheckoutController::class, 'success'])->name('success');
+});
+
 // Seller Registration Routes (Public)
 Route::get('/register-seller', [SellerRegistrationController::class, 'create'])->name('seller.register.form');
 Route::post('/register-seller', [SellerRegistrationController::class, 'store'])->name('seller.register');

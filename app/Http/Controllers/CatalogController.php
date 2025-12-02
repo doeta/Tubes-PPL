@@ -10,7 +10,7 @@ class CatalogController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Product::with(['category', 'user'])
+        $query = Product::with(['category', 'user', 'reviews'])
             ->where('status', 'active')
             ->where('stock', '>', 0);
 
@@ -65,6 +65,14 @@ class CatalogController extends Controller
         }
 
         $products = $query->paginate(20);
+        
+        // Load average rating for each product
+        $products->getCollection()->transform(function ($product) {
+            $product->average_rating = $product->averageRating();
+            $product->total_reviews = $product->totalReviews();
+            return $product;
+        });
+        
         $categories = Category::where('is_active', true)->get();
 
         return view('catalog.index', compact('products', 'categories'));
@@ -100,7 +108,7 @@ class CatalogController extends Controller
 
     public function show(Product $product)
     {
-        $product->load(['category', 'user.seller', 'reviews.user']);
+        $product->load(['category', 'user.seller', 'reviews']);
         
         // Only show active products with stock
         if ($product->status !== 'active' || $product->stock <= 0) {
@@ -110,13 +118,23 @@ class CatalogController extends Controller
         // Increment views
         $product->incrementViews();
 
-        // Get related products
-        $relatedProducts = Product::where('category_id', $product->category_id)
+        // Calculate rating statistics
+        $product->average_rating = $product->averageRating();
+        $product->total_reviews = $product->totalReviews();
+
+        // Get related products with ratings
+        $relatedProducts = Product::with('reviews')
+            ->where('category_id', $product->category_id)
             ->where('id', '!=', $product->id)
             ->where('status', 'active')
             ->where('stock', '>', 0)
             ->limit(5)
-            ->get();
+            ->get()
+            ->map(function ($relatedProduct) {
+                $relatedProduct->average_rating = $relatedProduct->averageRating();
+                $relatedProduct->total_reviews = $relatedProduct->totalReviews();
+                return $relatedProduct;
+            });
 
         return view('catalog.show', compact('product', 'relatedProducts'));
     }

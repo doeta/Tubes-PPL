@@ -4,27 +4,34 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
+use Illuminate\Database\Eloquent\Relations\HasMany;
 
 class Order extends Model
 {
     protected $fillable = [
         'order_number',
         'user_id',
+        'guest_name',
+        'guest_email',
+        'guest_phone',
         'seller_id',
         'product_id',
         'quantity',
         'price',
-        'total',
+        'total_amount',
         'status',
+        'payment_method',
+        'payment_status',
         'shipping_address',
+        'shipping_city',
+        'shipping_province',
+        'shipping_postal_code',
         'phone',
         'notes',
     ];
 
     protected $casts = [
-        'price' => 'decimal:2',
-        'total' => 'decimal:2',
-        'quantity' => 'integer',
+        'total_amount' => 'decimal:2',
     ];
 
     public function user(): BelongsTo
@@ -32,14 +39,19 @@ class Order extends Model
         return $this->belongsTo(User::class);
     }
 
+    public function product(): BelongsTo
+    {
+        return $this->belongsTo(Product::class);
+    }
+
     public function seller(): BelongsTo
     {
         return $this->belongsTo(User::class, 'seller_id');
     }
 
-    public function product(): BelongsTo
+    public function orderItems(): HasMany
     {
-        return $this->belongsTo(Product::class);
+        return $this->hasMany(OrderItem::class);
     }
 
     protected static function boot()

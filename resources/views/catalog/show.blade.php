@@ -23,7 +23,12 @@
                     </div>
                 </form>
 
-                <div class="flex gap-4">
+                <div class="flex gap-4 items-center">
+                    <a href="{{ route('cart.index') }}" class="relative p-2 text-gray-700 hover:text-indigo-600 transition-colors">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                        </svg>
+                    </a>
                     @auth
                         <a href="{{ route('dashboard') }}" class="px-4 py-2 text-gray-700 hover:text-indigo-600">Dashboard</a>
                     @endauth
@@ -152,14 +157,39 @@
                         @endif
                     </div>
 
-                    <div class="flex gap-2">
-                        <button class="flex-1 px-4 py-3 bg-white border-2 border-indigo-600 text-indigo-600 rounded-lg font-semibold hover:bg-indigo-50 transition text-sm">
-                            + Keranjang
-                        </button>
-                        <button class="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition text-sm">
-                            Beli Sekarang
-                        </button>
-                    </div>
+                    <!-- Add to Cart Form -->
+                    <form action="{{ route('cart.add', $product->slug) }}" method="POST" class="mb-4">
+                        @csrf
+                        <div class="flex items-center gap-3 mb-3">
+                            <label class="text-sm font-medium text-gray-700">Jumlah:</label>
+                            <div class="flex items-center border border-gray-300 rounded-lg">
+                                <button type="button" onclick="decrementQuantity()" class="px-3 py-1 text-gray-600 hover:bg-gray-100">-</button>
+                                <input type="number" name="quantity" id="quantity" value="{{ $product->min_order }}" min="{{ $product->min_order }}" max="{{ $product->stock }}" class="w-16 text-center border-0 focus:ring-0 py-1">
+                                <button type="button" onclick="incrementQuantity()" class="px-3 py-1 text-gray-600 hover:bg-gray-100">+</button>
+                            </div>
+                            <span class="text-sm text-gray-500">Stok: {{ $product->stock }}</span>
+                        </div>
+                        
+                        <div class="flex gap-2">
+                            <button type="submit" class="flex-1 px-4 py-3 bg-white border-2 border-indigo-600 text-indigo-600 rounded-lg font-semibold hover:bg-indigo-50 transition text-sm">
+                                + Keranjang
+                            </button>
+                            <a href="{{ route('cart.index') }}" class="flex-1 px-4 py-3 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition text-sm text-center">
+                                Beli Sekarang
+                            </a>
+                        </div>
+                    </form>
+                    
+                    @if(session('success'))
+                        <div class="bg-green-50 border border-green-200 text-green-700 px-4 py-2 rounded-lg text-sm">
+                            {{ session('success') }}
+                        </div>
+                    @endif
+                    @if(session('error'))
+                        <div class="bg-red-50 border border-red-200 text-red-700 px-4 py-2 rounded-lg text-sm">
+                            {{ session('error') }}
+                        </div>
+                    @endif
                 </div>
 
                 <!-- Store Info -->
@@ -197,16 +227,73 @@
                 <div class="bg-white rounded-lg p-4">
                     <h2 class="text-lg font-bold text-gray-900 mb-4">Ulasan Pembeli <span class="font-normal text-gray-600">({{ $product->totalReviews() }})</span></h2>
 
+                    <!-- Add Review Form -->
+                    <div class="bg-gray-50 rounded-lg p-4 mb-6">
+                        <h3 class="font-semibold text-gray-900 mb-3">Berikan Ulasan Anda</h3>
+                        <form action="{{ route('reviews.store', $product->slug) }}" method="POST" class="space-y-3">
+                            @csrf
+                            <div class="grid grid-cols-2 gap-3">
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nama Lengkap *</label>
+                                    <input type="text" name="guest_name" required value="{{ old('guest_name') }}" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    @error('guest_name')
+                                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-medium text-gray-700 mb-1">Nomor HP *</label>
+                                    <input type="text" name="guest_phone" required value="{{ old('guest_phone') }}" 
+                                        class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                    @error('guest_phone')
+                                        <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Email *</label>
+                                <input type="email" name="guest_email" required value="{{ old('guest_email') }}" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                                @error('guest_email')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Rating *</label>
+                                <div class="flex gap-1" id="rating-container">
+                                    @for($i = 1; $i <= 5; $i++)
+                                        <input type="radio" name="rating" value="{{ $i }}" id="rating{{ $i }}" required class="hidden">
+                                        <label for="rating{{ $i }}" class="rating-star cursor-pointer text-4xl text-gray-300 hover:text-yellow-400 transition" data-value="{{ $i }}">★</label>
+                                    @endfor
+                                </div>
+                                @error('rating')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <div>
+                                <label class="block text-sm font-medium text-gray-700 mb-1">Komentar (Opsional)</label>
+                                <textarea name="comment" rows="3" 
+                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500">{{ old('comment') }}</textarea>
+                                @error('comment')
+                                    <p class="text-xs text-red-600 mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+                            <button type="submit" class="w-full px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white rounded-lg font-semibold transition text-sm">
+                                Kirim Ulasan
+                            </button>
+                        </form>
+                    </div>
+
                     @if($product->reviews->count() > 0)
                         <div class="space-y-4">
                             @foreach($product->reviews as $review)
                                 <div class="border-b pb-3 last:border-0">
                                     <div class="flex items-start gap-2">
                                         <div class="w-10 h-10 bg-gradient-to-br from-indigo-500 to-purple-600 rounded-full flex items-center justify-center flex-shrink-0">
-                                            <span class="text-sm font-bold text-white">{{ substr($review->user->name, 0, 1) }}</span>
+                                            <span class="text-sm font-bold text-white">{{ substr($review->reviewer_name, 0, 1) }}</span>
                                         </div>
                                         <div class="flex-1">
-                                            <p class="font-semibold text-sm text-gray-900">{{ $review->user->name }}</p>
+                                            <p class="font-semibold text-sm text-gray-900">{{ $review->reviewer_name }}</p>
                                             <div class="flex items-center gap-2 mt-0.5">
                                                 <div class="flex items-center gap-0.5">
                                                     @for($i = 1; $i <= 5; $i++)
@@ -272,6 +359,64 @@
         element.classList.remove('border-gray-200');
         element.classList.add('border-indigo-500');
     }
+
+    function incrementQuantity() {
+        const input = document.getElementById('quantity');
+        const max = parseInt(input.max);
+        const current = parseInt(input.value);
+        if (current < max) {
+            input.value = current + 1;
+        }
+    }
+
+    function decrementQuantity() {
+        const input = document.getElementById('quantity');
+        const min = parseInt(input.min);
+        const current = parseInt(input.value);
+        if (current > min) {
+            input.value = current - 1;
+        }
+    }
+
+    // Rating star interaction
+    document.addEventListener('DOMContentLoaded', function() {
+        const ratingContainer = document.getElementById('rating-container');
+        const stars = ratingContainer.querySelectorAll('.rating-star');
+        let selectedRating = 0;
+
+        stars.forEach(star => {
+            // Click to select
+            star.addEventListener('click', function() {
+                const value = parseInt(this.dataset.value);
+                selectedRating = value;
+                document.getElementById('rating' + value).checked = true;
+                updateStars(value);
+            });
+
+            // Hover effect
+            star.addEventListener('mouseenter', function() {
+                const value = parseInt(this.dataset.value);
+                updateStars(value);
+            });
+
+            // Reset on mouse leave
+            ratingContainer.addEventListener('mouseleave', function() {
+                updateStars(selectedRating);
+            });
+        });
+
+        function updateStars(rating) {
+            stars.forEach((star, index) => {
+                if (index < rating) {
+                    star.classList.remove('text-gray-300');
+                    star.classList.add('text-yellow-400');
+                } else {
+                    star.classList.remove('text-yellow-400');
+                    star.classList.add('text-gray-300');
+                }
+            });
+        }
+    });
     </script>
 </body>
 </html>
