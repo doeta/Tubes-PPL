@@ -12,10 +12,13 @@ return new class extends Migration
     public function up(): void
     {
         // Table untuk review produk
+        // SRS-MartPlace-06: Pengunjung tidak perlu login untuk review
         Schema::create('reviews', function (Blueprint $table) {
             $table->id();
             $table->foreignId('product_id')->constrained()->onDelete('cascade');
-            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->string('name'); // Nama pengunjung
+            $table->string('phone', 20); // Nomor HP pengunjung
+            $table->string('email'); // Email pengunjung
             $table->integer('rating'); // 1-5
             $table->text('comment')->nullable();
             $table->timestamps();
@@ -37,7 +40,7 @@ return new class extends Migration
     public function down(): void
     {
         Schema::dropIfExists('reviews');
-        
+
         Schema::table('products', function (Blueprint $table) {
             $table->dropColumn(['sku', 'brand', 'weight', 'condition', 'min_order']);
         });
