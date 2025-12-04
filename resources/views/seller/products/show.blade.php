@@ -128,11 +128,11 @@
                         @foreach($product->reviews as $review)
                             <div class="border-b pb-4 last:border-b-0">
                                 <div class="flex items-center gap-2 mb-2">
-                                    <div class="w-10 h-10 bg-indigo-100 rounded-full flex items-center justify-center">
-                                        <span class="font-bold text-indigo-700">{{ substr($review->user->name, 0, 1) }}</span>
+                                    <div class="w-10 h-10 bg-gradient-to-br from-indigo-400 to-purple-500 rounded-full flex items-center justify-center shadow-md">
+                                        <span class="font-bold text-white">{{ substr($review->name, 0, 1) }}</span>
                                     </div>
                                     <div>
-                                        <p class="font-semibold text-gray-900">{{ $review->user->name }}</p>
+                                        <p class="font-semibold text-gray-900">{{ $review->name }}</p>
                                         <div class="flex items-center gap-1">
                                             @for($i = 1; $i <= 5; $i++)
                                                 <span class="text-sm {{ $i <= $review->rating ? 'text-yellow-500' : 'text-gray-300' }}">★</span>
