@@ -18,23 +18,23 @@ Platform marketplace untuk mahasiswa menjual dan membeli produk second dan new. 
 
 ### Untuk Penjual (Seller)
 
--   Registrasi dan verifikasi email (SRS-01, 02)
--   Upload produk dengan gambar (SRS-03)
--   Dashboard penjual dengan statistik dan charts (SRS-08)
+-   Registrasi dan verifikasi email
+-   Upload produk dengan gambar
+-   Dashboard penjual dengan statistik dan charts
 -   Kelola produk (CRUD operations)
--   Laporan PDF (SRS-09-14)
+-   Laporan PDF
 
 ### Untuk Pembeli dan Pengunjung
 
--   Katalog produk publik (SRS-04)
--   Pencarian dan filter produk (SRS-05)
--   Review dan rating tanpa login (SRS-06)
+-   Katalog produk publik
+-   Pencarian dan filter produk
+-   Review dan rating tanpa login
 -   Notifikasi email otomatis
 
 ### Untuk Admin
 
 -   Verifikasi akun penjual
--   Dashboard admin dengan analytics (SRS-07)
+-   Dashboard admin dengan analytics
 -   Generate berbagai laporan PDF
 -   Kelola kategori produk
 
@@ -273,31 +273,4 @@ brew install php@8.2
         └── ktp-files/        # KTP verification files
 ```
 
-## SRS Compliance
-
-Semua 14 requirement dari Software Requirements Specification telah diimplementasikan:
-
-| Requirement | Feature                   | Status   |
-| ----------- | ------------------------- | -------- |
-| SRS-01      | Registrasi Penjual        | Complete |
-| SRS-02      | Verifikasi Email          | Complete |
-| SRS-03      | Upload Produk             | Complete |
-| SRS-04      | Katalog Publik            | Complete |
-| SRS-05      | Pencarian Produk          | Complete |
-| SRS-06      | Review dan Rating (Guest) | Complete |
-| SRS-07      | Dashboard Admin           | Complete |
-| SRS-08      | Dashboard Penjual         | Complete |
-| SRS-09      | Laporan Akun Penjual      | Complete |
-| SRS-10      | Laporan Sebaran Toko      | Complete |
-| SRS-11      | Laporan Produk Rating     | Complete |
-| SRS-12      | Laporan Stok Tertinggi    | Complete |
-| SRS-13      | Laporan Rating Tertinggi  | Complete |
-| SRS-14      | Laporan Stok Menipis      | Complete |
-
-## License
-
-Proyek untuk tujuan pendidikan (Tugas Besar PPL).
-
-## Tim
-
-Team PPL 10 - Rekayasa Perangkat Lunak, Universitas Indonesia
+Built with ❤️ by PojokKampus
