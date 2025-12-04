@@ -58,7 +58,78 @@
             </div>
         </div>
         <div class="mt-4">
-            <span class="text-sm text-gray-500">{{ $stats['total_sold'] }} Produk Terjual</span>
+            <span class="text-sm text-gray-500">Dari {{ $stats['total_products'] }} Produk</span>
+        </div>
+    </div>
+
+    <!-- Total Stock -->
+    <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-600">Total Stok</p>
+                <p class="text-3xl font-bold text-gray-900 mt-2">{{ number_format($stats['total_stock']) }}</p>
+            </div>
+            <div class="bg-cyan-100 w-12 h-12 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-cyan-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 12l3-3 3 3 4-4M8 21l4-4 4 4M3 4h18M4 4h16v12a1 1 0 01-1 1H5a1 1 0 01-1-1V4z"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="mt-4">
+            @if($stats['low_stock'] > 0)
+            <span class="text-sm text-red-600 font-medium">{{ $stats['low_stock'] }} Produk Butuh Restock</span>
+            @else
+            <span class="text-sm text-green-600 font-medium">Stok Aman</span>
+            @endif
+        </div>
+    </div>
+
+    <!-- Out of Stock -->
+    <div class="bg-white rounded-lg border border-gray-200 p-6">
+        <div class="flex items-center justify-between">
+            <div>
+                <p class="text-sm text-gray-600">Habis Stok</p>
+                <p class="text-3xl font-bold text-gray-900 mt-2">{{ $stats['out_of_stock'] }}</p>
+            </div>
+            <div class="bg-red-100 w-12 h-12 rounded-lg flex items-center justify-center">
+                <svg class="w-6 h-6 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z"></path>
+                </svg>
+            </div>
+        </div>
+        <div class="mt-4">
+            @if($stats['out_of_stock'] > 0)
+            <a href="{{ route('seller.reports.restock') }}" class="text-sm text-red-600 hover:text-red-700 font-medium">Lihat Laporan →</a>
+            @else
+            <span class="text-sm text-gray-500">Tidak ada produk kosong</span>
+            @endif
+        </div>
+    </div>
+</div>
+
+<!-- Charts Section (SRS-MartPlace-08) -->
+<div class="mt-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Grafik & Statistik Toko</h2>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Stock Distribution Chart -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Sebaran Stok per Produk</h3>
+            <canvas id="stockByProductChart" style="max-height: 300px;"></canvas>
+        </div>
+
+        <!-- Rating Distribution Chart -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Sebaran Rating per Produk</h3>
+            <canvas id="ratingByProductChart" style="max-height: 300px;"></canvas>
+        </div>
+
+        <!-- Review Distribution per Product (SRS-06) -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6 lg:col-span-2">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Distribusi Review per Produk</h3>
+            <div style="max-height: 400px; display: flex; justify-content: center;">
+                <canvas id="ratingsByProvinceChart"></canvas>
+            </div>
         </div>
     </div>
 </div>
@@ -148,15 +219,28 @@
 </div>
 
 <!-- Quick Actions -->
-<div class="mt-6 bg-gradient-to-r from-indigo-600 to-purple-600 rounded-lg p-6 text-white">
+<div class="mt-6 bg-gradient-to-r from-purple-600 to-indigo-600 rounded-lg p-6 text-white">
     <div class="flex items-center justify-between">
         <div>
             <h3 class="text-xl font-bold mb-2">Mulai Berjualan!</h3>
-            <p class="text-indigo-100">Tambahkan produk baru dan raih lebih banyak pembeli</p>
+            <p class="text-purple-100">Tambahkan produk baru dan raih lebih banyak pembeli</p>
         </div>
-        <a href="{{ route('seller.products.create') }}" class="px-6 py-3 bg-white text-indigo-600 rounded-lg font-bold hover:bg-gray-100 transition-colors">
+        <a href="{{ route('seller.products.create') }}" class="px-6 py-3 bg-white text-purple-600 rounded-lg font-bold hover:bg-gray-100 transition-colors">
             + Tambah Produk
         </a>
     </div>
 </div>
+
+<!-- Chart Data -->
+<div id="sellerChartData" style="display:none;"
+     data-stock-product-names="{{ json_encode($stockByProduct->pluck('name')) }}"
+     data-stock-product-values="{{ json_encode($stockByProduct->pluck('stock')) }}"
+     data-rating-product-names="{{ json_encode($ratingByProduct->pluck('name')) }}"
+     data-rating-product-values="{{ json_encode($ratingByProduct->pluck('rating')) }}"
+     data-review-product-names="{{ json_encode($ratingsByProvince->pluck('name')) }}"
+     data-review-product-values="{{ json_encode($ratingsByProvince->pluck('total')) }}">
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ asset('js/seller-charts.js') }}"></script>
 @endsection

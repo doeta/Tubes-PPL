@@ -3,7 +3,7 @@
 @section('content')
 <div class="mb-8">
     <h1 class="text-3xl font-bold text-gray-900">Dashboard Admin</h1>
-    <p class="text-gray-600 mt-1">Kelola platform marketplace PojokKampus</p>
+    <p class="text-gray-600 mt-1">Statistik dan Monitoring Platform PojokKampus (SRS-MartPlace-07)</p>
 </div>
 
 <!-- Stats Cards -->
@@ -165,4 +165,50 @@
         </div>
     </div>
 </div>
+
+<!-- Charts Section (SRS-MartPlace-07) -->
+<div class="mt-8">
+    <h2 class="text-2xl font-bold text-gray-900 mb-6">Grafik & Statistik</h2>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+        <!-- Product Distribution by Category -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Sebaran Produk per Kategori</h3>
+            <canvas id="productsByCategoryChart" style="max-height: 300px;"></canvas>
+        </div>
+
+        <!-- Store Distribution by Province -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Sebaran Toko per Provinsi (Top 10)</h3>
+            <canvas id="storesByProvinceChart" style="max-height: 300px;"></canvas>
+        </div>
+
+        <!-- Seller Status Statistics -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Status Penjual</h3>
+            <canvas id="sellerStatusChart" style="max-height: 300px;"></canvas>
+        </div>
+
+        <!-- Review Statistics (SRS-06) -->
+        <div class="bg-white rounded-lg border border-gray-200 p-6">
+            <h3 class="text-lg font-bold text-gray-900 mb-4">Statistik Review (SRS-06)</h3>
+            <canvas id="participationChart" style="max-height: 300px;"></canvas>
+        </div>
+    </div>
+</div>
+
+<!-- Chart Data -->
+<div id="chartData" style="display:none;"
+     data-product-category-names="{{ json_encode($productsByCategory->pluck('name')) }}"
+     data-product-category-totals="{{ json_encode($productsByCategory->pluck('total')) }}"
+     data-province-names="{{ json_encode($storesByProvince->pluck('provinsi')) }}"
+     data-province-totals="{{ json_encode($storesByProvince->pluck('total')) }}"
+     data-seller-active="{{ $sellerStats['active'] }}"
+     data-seller-inactive="{{ $sellerStats['inactive'] }}"
+     data-total-reviews="{{ $participationStats['total_reviews'] }}"
+     data-unique-reviewers="{{ $participationStats['unique_reviewers'] }}">
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<script src="{{ asset('js/admin-charts.js') }}"></script>
 @endsection
