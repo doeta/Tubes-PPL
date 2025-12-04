@@ -1,8 +1,8 @@
 <x-guest-layout>
     <!-- Page Title -->
-    <div class="mb-6">
-        <h2 class="text-2xl font-bold text-gray-900 mb-2">Selamat Datang Kembali</h2>
-        <p class="text-sm text-gray-600">Silakan login ke akun Anda</p>
+    <div class="mb-8">
+        <h2 class="text-3xl font-bold text-gray-900 mb-2">Selamat Datang! 👋</h2>
+        <p class="text-gray-600">Silakan login untuk melanjutkan</p>
     </div>
 
     <!-- Session Status -->
@@ -53,7 +53,7 @@
         <!-- Submit Button -->
         <div>
             <button type="submit" 
-                class="w-full px-6 py-3 bg-indigo-600 text-white rounded-lg font-semibold hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition-all duration-200 shadow-md hover:shadow-lg">
+                class="w-full px-6 py-3.5 bg-gradient-to-r from-teal-600 to-cyan-600 text-white rounded-xl font-semibold hover:from-teal-700 hover:to-cyan-700 focus:outline-none focus:ring-2 focus:ring-teal-500 focus:ring-offset-2 transition-all duration-200 shadow-lg hover:shadow-xl transform hover:-translate-y-0.5">
                 Masuk
             </button>
         </div>
