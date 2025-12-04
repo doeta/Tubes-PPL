@@ -1,0 +1,17 @@
+{
+    "compilerOptions": {
+        "target": "ES6",
+        "module": "commonjs",
+        "checkJs": false,
+        "noEmit": true
+    },
+    "include": ["public/js/**/*", "resources/js/**/*"],
+    "exclude": [
+        "node_modules",
+        "vendor",
+        "storage",
+        "bootstrap",
+        "resources/views",
+        "**/*.blade.php"
+    ]
+}
