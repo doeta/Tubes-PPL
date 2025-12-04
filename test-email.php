@@ -5,14 +5,15 @@
  * Jalankan dengan: php test-email.php
  */
 
-require __DIR__.'/vendor/autoload.php';
+require __DIR__ . '/vendor/autoload.php';
 
-$app = require_once __DIR__.'/bootstrap/app.php';
+$app = require_once __DIR__ . '/bootstrap/app.php';
 $kernel = $app->make(Illuminate\Contracts\Console\Kernel::class);
 $kernel->bootstrap();
 
 use App\Models\User;
 use App\Notifications\SellerVerificationNotification;
+use Illuminate\Support\Facades\DB;
 
 echo "=== Test Email Notification ===\n\n";
 
